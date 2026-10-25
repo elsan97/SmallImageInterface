@@ -1,6 +1,10 @@
 # SII (Small Image Interface)
 
-logo.png
+<p align="center">
+  <img src="logo.png" alt="SII Logo" width="800"/>
+</p>
+
+<h1 align="center">Small Image Interface</h1>
 
 Привет. Это мой пет-проект — формат сжатия изображений для маленьких картинок (иконки, спрайты, пиксель-арт). 
 
