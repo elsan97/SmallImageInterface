@@ -1,0 +1,4 @@
+﻿  sii.c
+     Создается библиотека C:\SmallImageInterface\SmallImageInterface\Debug\SmallImageInterface.lib и объект C:\SmallImageInterface\SmallImageInterface\Debug\SmallImageInterface.exp
+SmallImageInterface.exp : warning LNK4070: директива /OUT:sii.dll в .EXP отличается от имени выходного файла "C:\SmallImageInterface\SmallImageInterface\Debug\SmallImageInterface.dll"; директива игнорируется
+  SmallImageInterface.vcxproj -> C:\SmallImageInterface\SmallImageInterface\Debug\SmallImageInterface.dll
