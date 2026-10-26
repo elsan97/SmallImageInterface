@@ -1,3 +1,4 @@
+
 # SII (Small Image Interface)
 
 <p align="center">
@@ -21,8 +22,9 @@
 
 
 ## Что есть по совместимости и какие есть проблемы (от 26.10.2026)
+###ВСЕ БИБЛИИ ПО РАЗНЫМ ВЕТКАМ
 В проекте есть:
-1. Библиотека Python
+1. Библиотека Python (`pip install sii-image`)
 2. WebAssembly расширение как файл `sii.wasm` и `sii.js`
 3. Декодер на Go
 4. обычная DLL
