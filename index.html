@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>SII Web Viewer</title>
+    <style>
+        body { font-family: sans-serif; background: #222; color: #fff; text-align: center; padding: 20px; }
+        #canvas-container { margin-top: 20px; }
+        canvas { border: 1px solid #555; background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFUlEQVR42mNkYPhfz0AEYBxVSF+FAP5FDvcfRYWgAAAAAElFTkSuQmCC'); }
+        input[type="file"] { margin-top: 20px; padding: 10px; background: #333; color: white; border: 1px solid #555; }
+    </style>
+</head>
+<body>
+    <h1>SII Web Viewer</h1>
+    <p>Выбери файл .sii, чтобы увидеть его в браузере</p>
+    
+    <input type="file" id="fileInput" accept=".sii">
+    
+    <div id="canvas-container">
+        <canvas id="siiCanvas"></canvas>
+    </div>
+
+    <script src="sii.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('siiCanvas');
+        const ctx = canvas.getContext('2d');
+
+        Module.onRuntimeInitialized = () => {
+            console.log("WASM готов!");
+            
+            const sii_decode = Module.cwrap('sii_decode', 'number', ['number', 'number']);
+            const sii_free = Module.cwrap('sii_free', null, ['number']);
+            const sii_get_width = Module.cwrap('sii_get_width', 'number', ['number']);
+            const sii_get_height = Module.cwrap('sii_get_height', 'number', ['number']);
+            const sii_get_pixels = Module.cwrap('sii_get_pixels', 'number', ['number']);
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    const buffer = new Uint8Array(evt.target.result);
+                    
+                    const ptr = Module._malloc(buffer.length);
+                    Module.HEAPU8.set(buffer, ptr);
+
+                    const imgPtr = sii_decode(ptr, buffer.length);
+                    
+                    if (imgPtr === 0) {
+                        alert("Ошибка декодирования файла!");
+                        Module._free(ptr);
+                        return;
+                    }
+
+                    const width = sii_get_width(imgPtr);
+                    const height = sii_get_height(imgPtr);
+                    const pixelsPtr = sii_get_pixels(imgPtr);
+
+                    console.log(`Картинка: ${width}x${height}`);
+
+                    const imageData = ctx.createImageData(width, height);
+                    const pixels = new Uint8ClampedArray(Module.HEAPU8.buffer, pixelsPtr, width * height * 4);
+                    imageData.data.set(pixels);
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.putImageData(imageData, 0, 0);
+
+                    sii_free(imgPtr);
+                    Module._free(ptr);
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        };
+    </script>
+</body>
+</html>
